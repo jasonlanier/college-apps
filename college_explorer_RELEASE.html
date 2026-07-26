@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colin's College Explorer</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3QgeD0iMTkiIHk9IjI5IiB3aWR0aD0iMjYiIGhlaWdodD0iMTEiIHJ4PSIyIiBmaWxsPSIjMUUyQTM4Ii8+CiAgPHBvbHlnb24gcG9pbnRzPSIzMiw4IDU5LDIzIDMyLDM4IDUsMjMiIGZpbGw9IiM3QTJBMkEiLz4KICA8cG9seWdvbiBwb2ludHM9IjMyLDggNTksMjMgMzIsMjYgNSwyMyIgZmlsbD0iIzhmMzUzNSIvPgogIDxjaXJjbGUgY3g9IjMyIiBjeT0iMjMiIHI9IjMuMiIgZmlsbD0iI0I4ODczQSIvPgogIDxwYXRoIGQ9Ik00NCwyNSBMNTEsNDUiIHN0cm9rZT0iI0I4ODczQSIgc3Ryb2tlLXdpZHRoPSIyLjQiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxjaXJjbGUgY3g9IjUxLjUiIGN5PSI0NyIgcj0iMy40IiBmaWxsPSIjQjg4NzNBIi8+Cjwvc3ZnPgo=">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --paper:#F7F3EA;
+    --paper-raised:#FFFDF8;
+    --ink:#1E2A38;
+    --ink-soft:#4B5A6B;
+    --maroon:#7A2A2A;
+    --maroon-deep:#5C1F1F;
+    --gold:#B8873A;
+    --slate:#3B5773;
+    --line:#D8CFBE;
+    --good:#3F6B4F;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.4;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:1440px;margin:0 auto;padding:28px 24px 80px;}
+
+  header{
+    border-bottom:2px solid var(--ink);
+    padding-bottom:18px;
+    margin-bottom:20px;
+  }
+  h1{
+    font-family:'Source Serif 4',serif;
+    font-weight:700;
+    font-size:clamp(28px,4vw,42px);
+    margin:0 0 6px 0;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{
+    color:var(--ink-soft);
+    font-size:14.5px;
+    max-width:800px;
+  }
+  .subtitle b{color:var(--ink);font-weight:600;}
+
+  .header-top-row{
+    display:flex;
+    justify-content:flex-end;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .settings-link{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:600;
+    color:var(--slate);
+    text-decoration:none;
+    border-bottom:1px dotted var(--slate);
+    white-space:nowrap;
+    cursor:pointer;
+  }
+  .settings-link:hover{color:var(--maroon);border-bottom-color:var(--maroon);}
+  .settings-link:focus-visible{outline:2px solid var(--slate);outline-offset:2px;}
+
+  /* Settings modal */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(30,42,56,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+    padding:20px;
+  }
+  .modal-overlay[hidden]{display:none;}
+  .modal-box{
+    background:var(--paper-raised);
+    border-radius:8px;
+    border:1px solid var(--line);
+    max-width:520px;
+    width:100%;
+    max-height:88vh;
+    overflow-y:auto;
+    padding:24px 26px;
+    box-shadow:0 12px 40px rgba(30,42,56,0.35);
+  }
+  .modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:6px;
+  }
+  .modal-title{
+    font-family:'Source Serif 4',serif;
+    font-size:21px;
+    font-weight:700;
+    margin:0;
+  }
+  .modal-close{
+    background:none;border:none;cursor:pointer;
+    font-size:20px;line-height:1;color:var(--ink-soft);
+    padding:2px 6px;
+  }
+  .modal-close:hover{color:var(--maroon);}
+  .modal-desc{font-size:13px;color:var(--ink-soft);margin-bottom:12px;line-height:1.45;}
+  .weight-row{margin-bottom:16px;}
+  .weight-label-row{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:13px;margin-bottom:4px;
+  }
+  .weight-label-row span:first-child{font-weight:600;color:var(--ink);}
+  .weight-pct{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    color:var(--maroon);
+    font-size:13px;
+  }
+  .weight-total-row{
+    display:flex;justify-content:space-between;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;color:var(--ink-soft);
+    border-top:1px solid var(--line);
+    padding-top:10px;margin-top:4px;
+    font-weight:700;
+  }
+  .modal-actions{
+    display:flex;justify-content:flex-end;gap:10px;
+    margin-top:20px;flex-wrap:wrap;
+  }
+  .modal-btn{
+    font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+    border-radius:4px;padding:8px 14px;cursor:pointer;
+    transition:all .15s ease;
+  }
+  .modal-btn.primary{background:var(--maroon);color:#fff;border:1px solid var(--maroon);}
+  .modal-btn.primary:hover{background:var(--maroon-deep);}
+  .modal-btn.secondary{background:none;color:var(--ink);border:1px solid var(--line);}
+  .modal-btn.secondary:hover{background:var(--paper);}
+  .modal-btn.text{background:none;color:var(--slate);border:none;text-decoration:underline;padding:8px 4px;}
+
+  /* Ledger tally strip — signature element */
+  .tally{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0;
+    background:var(--ink);
+    color:var(--paper-raised);
+    border-radius:3px;
+    overflow:hidden;
+    margin:18px 0 26px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .tally-cell{
+    flex:1;
+    min-width:150px;
+    padding:14px 18px;
+    border-right:1px solid rgba(247,243,234,0.18);
+  }
+  .tally-cell:last-child{border-right:none;}
+  .tally-label{
+    font-size:10px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:#C8BEA6;
+    margin-bottom:4px;
+  }
+  .tally-value{
+    font-size:20px;
+    font-weight:600;
+    font-variant-numeric:tabular-nums;
+    color:#FFFCF5;
+  }
+  .tally-value.accent{color:#E3B168;}
+
+  .layout{
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+
+  /* Filter panel */
+  .panel{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:20px 22px;
+  }
+
+  .panel-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+    gap:20px 26px;
+  }
+
+  .panel h2{
+    font-family:'Source Serif 4',serif;
+    font-size:17px;
+    margin:0 0 14px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .reset-btn{
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:600;
+    color:var(--maroon);
+    background:none;
+    border:1px solid var(--maroon);
+    border-radius:4px;
+    padding:5px 10px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .reset-btn:hover{background:var(--maroon);color:#fff;}
+  .reset-btn:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--slate);
+    outline-offset:2px;
+  }
+
+  .filter-group{min-width:0;}
+  .filter-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:9px;
+    display:flex;
+    justify-content:space-between;
+  }
+
+  .slider-value{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--maroon);
+    font-weight:600;
+  }
+  input[type=range]{
+    width:100%;
+    accent-color:var(--maroon);
+    height:4px;
+    margin:8px 0 2px;
+  }
+  .slider-minmax{
+    display:flex;
+    justify-content:space-between;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  .check-list{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto;padding-right:4px;}
+  .check-list label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .check-list input{accent-color:var(--maroon);width:15px;height:15px;flex-shrink:0;}
+  .check-count{color:var(--ink-soft);font-size:11.5px;margin-left:auto;font-family:'IBM Plex Mono',monospace;}
+  .eng-filter-note{font-size:10.5px;color:var(--ink-soft);margin-top:6px;line-height:1.35;}
+
+  /* Top 5 section */
+  .top5-section{margin:0;}
+  .top5-title{
+    font-family:'Source Serif 4',serif;
+    font-size:19px;
+    margin:0 0 12px 0;
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .top5-sub{
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:400;
+    color:var(--ink-soft);
+  }
+  .top5-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+    gap:14px;
+  }
+  .top5-empty{
+    padding:20px;
+    background:var(--paper-raised);
+    border:1px dashed var(--line);
+    border-radius:6px;
+    color:var(--ink-soft);
+    font-size:13.5px;
+  }
+  .t5-card{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:14px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .t5-card.t5-rank1{border-color:var(--gold);border-width:2px;}
+  .t5-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:8px;
+  }
+  .t5-rank{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    font-weight:700;
+    color:#fff;
+    background:var(--maroon);
+    width:20px;height:20px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .t5-fit{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:24px;
+    font-weight:700;
+    color:var(--maroon);
+    line-height:1;
+  }
+  .t5-fit-label{font-size:9.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.06em;text-align:right;}
+  .t5-name{font-family:'Source Serif 4',serif;font-weight:600;font-size:15px;color:var(--ink);line-height:1.25;}
+  .t5-loc{font-size:11px;color:var(--ink-soft);}
+  .t5-setting{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--slate);
+    background:#EAF0F5;
+    display:inline-block;
+    padding:3px 9px;
+    border-radius:3px;
+    width:fit-content;
+  }
+  .t5-badge-row{display:flex;gap:6px;flex-wrap:wrap;}
+  .t5-factors{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:4px 10px;
+    font-size:11.5px;
+    font-family:'IBM Plex Mono',monospace;
+    padding:8px 0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .t5-factor{display:flex;justify-content:space-between;color:var(--ink-soft);}
+  .t5-factor b{color:var(--ink);font-weight:600;}
+  .t5-degreefit{font-size:11.5px;line-height:1.4;color:var(--ink-soft);margin-bottom:4px;}
+  .t5-degreefit b{color:var(--ink);}
+  .t5-degreefit a{color:var(--maroon);text-decoration:none;font-weight:600;white-space:nowrap;}
+  .t5-degreefit a:hover{text-decoration:underline;}
+  .t5-overallfit{
+    font-size:12.5px;
+    line-height:1.45;
+    color:var(--ink);
+    padding-bottom:2px;
+  }
+  .t5-mismatch{
+    font-size:11.5px;
+    line-height:1.4;
+    color:var(--maroon-deep);
+    background:#F7E6E1;
+    border-radius:4px;
+    padding:6px 9px;
+  }
+  .t5-mismatch b{color:var(--maroon);}
+
+  /* Results */
+  .results-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:10px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .results-count{
+    font-family:'Source Serif 4',serif;
+    font-size:18px;
+  }
+  .results-count b{color:var(--maroon);}
+  .sort-hint{font-size:12px;color:var(--ink-soft);}
+
+  .table-scroll{
+    overflow-x:auto;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:var(--paper-raised);
+  }
+  table{
+    border-collapse:collapse;
+    width:100%;
+    min-width:1280px;
+    font-size:13px;
+  }
+  thead th{
+    position:sticky;
+    top:0;
+    background:var(--ink);
+    color:var(--paper-raised);
+    text-align:left;
+    padding:12px 12px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+    white-space:normal;
+    word-wrap:break-word;
+    line-height:1.35;
+    vertical-align:middle;
+    min-height:52px;
+    user-select:none;
+  }
+  thead th:hover{background:var(--maroon-deep);}
+  thead th .arrow{opacity:0.55;margin-left:3px;}
+  thead th.active .arrow{opacity:1;color:#E3B168;}
+
+  tbody tr{border-bottom:1px solid var(--line);}
+  tbody tr:hover{background:#F0E9D8;}
+  tbody td{padding:9px 12px;vertical-align:top;white-space:nowrap;}
+  tbody td.wrap-cell{white-space:normal;min-width:150px;}
+
+  .school-name{font-weight:600;color:var(--ink);}
+  .school-name-link{
+    text-decoration:none;
+    border-bottom:1px dotted var(--maroon);
+    cursor:pointer;
+    display:inline-block;
+  }
+  .school-name-link:hover{color:var(--maroon);}
+  .school-name-link:focus-visible{outline:2px solid var(--slate);outline-offset:2px;}
+  .school-loc{display:block;font-size:11.5px;color:var(--ink-soft);}
+  .cost-sub{display:block;font-size:11px;color:var(--ink-soft);font-weight:400;margin-top:1px;}
+
+  .type-badge{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:600;
+    padding:2px 7px;
+    border-radius:3px;
+    color:#fff;
+    white-space:nowrap;
+  }
+  .type-public{background:var(--slate);}
+  .type-private{background:var(--maroon);}
+
+  .mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;}
+  .cost-good{color:var(--good);font-weight:600;}
+  .eng-cell{white-space:nowrap;}
+  .apply-target{font-weight:600;color:var(--maroon);white-space:nowrap;}
+  .no-target{color:var(--ink-soft);font-weight:400;}
+  .view-selector{
+    display:flex;
+    gap:6px;
+    margin-bottom:14px;
+  }
+  .view-btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    padding:7px 16px;
+    border:1px solid var(--line);
+    background:var(--paper-raised);
+    color:var(--ink-soft);
+    border-radius:5px;
+    cursor:pointer;
+    transition:background 0.12s, color 0.12s;
+  }
+  .view-btn:hover{background:var(--paper);color:var(--ink);}
+  .view-btn.active{background:var(--maroon);border-color:var(--maroon);color:#fff;}
+  .eng-badge{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    font-weight:600;
+    padding:2px 5px;
+    border-radius:3px;
+    margin-right:3px;
+  }
+  .eng-yes{background:var(--good);color:#fff;}
+  .eng-no{background:#EDE6D6;color:var(--ink-soft);}
+  .links a{color:var(--slate);text-decoration:none;font-size:12px;margin-right:8px;border-bottom:1px dotted var(--slate);}
+  .links a:hover{color:var(--maroon);}
+
+  .empty-state{
+    padding:50px 20px;
+    text-align:center;
+    color:var(--ink-soft);
+  }
+  .empty-state b{color:var(--ink);display:block;font-family:'Source Serif 4',serif;font-size:18px;margin-bottom:6px;}
+
+  footer{
+    margin-top:26px;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    border-top:1px solid var(--line);
+    padding-top:14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="header-top-row">
+      <a href="#" id="settingsLink" class="settings-link">⚙ Settings</a>
+    </div>
+    <h1>Colin's College Explorer</h1>
+    <div class="subtitle">
+      Filtered your way. All 29 schools now carry a full <b>Fit Rating</b>. <b>COA Projected</b>
+      is Total Annual Cost minus the estimated midpoint merit award for this student's profile at each school — a rough
+      net-cost planning number, not a quote. Move the slider to set your ceiling; everything shown is at or below it.
+    </div>
+  </header>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-overlay" id="settingsModal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Fit Rating Weighting</h3>
+        <button class="modal-close" id="modalCloseBtn" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-desc">
+        This is how much each factor counts toward the overall <b>Fit Rating</b> for all 29 schools.
+        To update these weights, use the prompt interface.
+      </div>
+      <div id="weightSliders"><!-- filled by JS, read-only display --></div>
+      <div class="weight-total-row">
+        <span>Total</span>
+        <span>100</span>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn primary" id="modalCloseBtn2">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHOOL DETAIL CARD MODAL -->
+  <div class="modal-overlay" id="schoolCardModal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="schoolCardModalTitle" style="max-width:460px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="schoolCardModalTitle" style="font-size:16px;">School Detail</h3>
+        <button class="modal-close" id="schoolCardCloseBtn" aria-label="Close">&times;</button>
+      </div>
+      <div id="schoolCardContent"><!-- filled by JS --></div>
+    </div>
+  </div>
+
+  <div class="tally" id="tally"><!-- filled by JS --></div>
+
+  <div class="layout">
+    <!-- FILTER PANEL -->
+    <aside class="panel">
+      <h2>Filters <button class="reset-btn" id="resetBtn">Reset all</button></h2>
+
+      <div class="panel-grid">
+        <div class="filter-group">
+          <div class="filter-title">
+            <span>COA Projected — max</span>
+            <span class="slider-value" id="mmcVal"></span>
+          </div>
+          <input type="range" id="mmcSlider" step="1000">
+          <div class="slider-minmax"><span id="mmcMinLbl"></span><span id="mmcMaxLbl"></span></div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-title"><span>Type</span></div>
+          <div class="check-list" id="typeFilters"></div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-title"><span>In-Texas</span></div>
+          <div class="check-list" id="txFilters"></div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-title"><span>Region</span></div>
+          <div class="check-list" id="regionFilters"></div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-title"><span>Campus setting</span></div>
+          <div class="check-list" id="settingFilters"></div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-title"><span>Engineering degrees offered</span></div>
+          <div class="check-list" id="engFilters"></div>
+          <div class="eng-filter-note">Checking more than one shows only schools offering <em>all</em> selected degrees.</div>
+        </div>
+      </div>
+    </aside>
+
+
+    <!-- TOP 5 -->
+    <section class="top5-section">
+      <h2 class="top5-title">Top 5 Fit <span class="top5-sub">— updates with your filters, ranked by Fit Rating</span></h2>
+      <div class="top5-grid" id="top5Grid"><!-- filled by JS --></div>
+    </section>
+
+    <!-- RESULTS -->
+    <main>
+      <div class="view-selector" id="viewSelector">
+        <button class="view-btn active" data-view="primary">Primary</button>
+        <button class="view-btn" data-view="ratings">Ratings</button>
+      </div>
+
+      <div class="results-header">
+        <div class="results-count"><b id="resultCount">—</b> schools match</div>
+        <div class="sort-hint">Click any column header to sort</div>
+      </div>
+
+      <div class="table-scroll">
+        <table id="resultsTable">
+          <thead id="resultsHead"><!-- filled by JS based on active view --></thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <b>No schools match these filters.</b>
+        Try raising the cost ceiling or re-checking a Type / Region box. Use "Reset all" to start over.
+      </div>
+    </main>
+  </div>
+
+  <footer>
+    Tuition, cost, and merit figures are estimates for planning purposes only — verify against each school's own Net Price Calculator.
+    SAT ranges reflect the middle 50% of each school's admitted class. In-Texas schools use in-state tuition; all others use
+    nonresident/out-of-state tuition. Region groups Northeast/Mid-Atlantic → East, Pacific/Mountain → West, Gulf/Southeast/Texas
+    → South, and Midwest → North.
+    <br><br>
+    <b>Ratings (Engineering Rating, ME/AE Rating, IE/SE Rating, Academic Balance, Culture – High Energy,
+    Culture – Supportive, Alumni Network, Public Brand)</b> are scored 0–100 and are qualitative
+    judgment calls, not sourced data — every one of the 29 schools in this dataset carries a full set of ratings.
+    Reasonable people would score these differently.
+    <br><br>
+    <b>Engineering Rating</b> reflects the pedigree of the school's overall engineering school — a blend of
+    reputation and the economic/career outcomes of its graduates. <b>ME/AE Rating</b> and <b>IE/SE Rating</b> apply
+    that same pedigree lens specifically to the Mechanical/Aerospace and Industrial/Systems programs, since those
+    are Colin's two areas of interest — a school can score well on overall Engineering Rating while scoring lower
+    on one of these if that particular department is thin or nonexistent.
+    <br><br>
+    <b>Culture – High Energy</b> rates the level of energy, enthusiasm, and stimulation on campus (big, spirited
+    programs like Texas A&amp;M and Auburn score highest; quieter, low-key campuses score lowest).
+    <b>Culture – Supportive</b> rates how collaborative and teamwork-oriented the culture is, versus cutthroat,
+    competitive, or transactional. These are independent dimensions — a school can be high-energy without being
+    especially supportive, or vice versa.
+    <br><br>
+    <b>Overall Fit</b> and <b>Mismatch Watch</b> (shown only in the Top 5 cards, never as table columns) are short
+    written summaries of why a school could work for Colin and where the real friction points are, respectively —
+    populated for all 29 schools, so any school can appear in the Top 5. The Top 5 cards also show program-level
+    notes on ME/AE and IE/SE pedigree, each with links to the official department or program page where one exists.
+    <br><br>
+    <b>Fit Rating</b> = weighted average of ME/AE Rating (20%), IE/SE Rating (20%), Engineering Rating (15%),
+    Academic Balance (10%), Culture – High Energy (10%), Culture – Supportive (10%), Alumni Network (5%), and
+    Public Brand (10%). These weights are fixed — see Settings for a read-only breakdown. All 29 schools are
+    scored. This is the default sort.
+  </footer>
+
+</div>
+
+<script>
+const DATA = [{id:1,name:"Texas A&M University",loc:"College Station, TX",region:"South",type:"Public",inTexas:"Texas",undergrads:59000,setting:"College town",satLow:1170,satHigh:1400,tuition:13100,totalCost:33700,meritGen:"Low",meritModelCost:32000,me:true,ae:true,ie:true,academic:82,engineering:92,meAe:92,ieSe:90,energyCulture:97,supportCulture:92,alumni:95,brand:90,colinRank:91,applyTarget:"August",overallFit:"Elite, design-heavy Aerospace and Industrial & Systems Engineering programs match Colin's exact interests, backed by massive resources. In-state tuition keeps cost low, and the legendarily tribal Aggie culture and nonstop campus life deliver the high-energy environment he's looking for.",mismatchWatch:"Huge campus (59K undergrads) could feel impersonal despite strong community — worth visiting before committing.",site:"https://www.tamu.edu",wiki:"https://en.wikipedia.org/wiki/Texas_A%26M_University"},
+{id:2,name:"Texas Tech University",loc:"Lubbock, TX",region:"South",type:"Public",inTexas:"Texas",undergrads:30000,setting:"College town",satLow:1050,satHigh:1280,tuition:12000,totalCost:27000,meritGen:"Medium-High",meritModelCost:22000,me:true,ae:false,ie:true,academic:62,engineering:60,meAe:55,ieSe:50,energyCulture:85,supportCulture:75,alumni:68,brand:62,colinRank:68,applyTarget:null,overallFit:"In-state affordability and solid merit aid make Texas Tech cost-effective, with genuine energy and Red Raider pride on campus. The tradeoff: no standalone Aerospace major exists, so this fits general engineering interest better than his specific aerospace/systems focus.",mismatchWatch:"No dedicated Aerospace Engineering degree — only a minor — despite otherwise strong fit and cost.",site:"https://www.ttu.edu",wiki:"https://en.wikipedia.org/wiki/Texas_Tech_University"},
+{id:3,name:"University of Houston",loc:"Houston, TX",region:"South",type:"Public",inTexas:"Texas",undergrads:36000,setting:"Urban",satLow:1170,satHigh:1330,tuition:10700,totalCost:29932,meritGen:"Medium",meritModelCost:24000,me:true,ae:false,ie:true,academic:65,engineering:62,meAe:60,ieSe:55,energyCulture:50,supportCulture:55,alumni:65,brand:55,colinRank:63,applyTarget:null,overallFit:"Low in-state cost and a real Industrial & Systems Engineering program help here, but Aerospace Engineering is graduate-only for undergrads, and the urban, commuter-influenced campus offers less of the high-energy, tight-knit culture Colin's looking for.",mismatchWatch:"No undergraduate Aerospace degree, and campus culture leans commuter rather than high-energy/tribal.",site:"https://www.uh.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Houston"},
+{id:4,name:"University of Houston-Clear Lake",loc:"Houston, TX",region:"South",type:"Public",inTexas:"Texas",undergrads:6100,setting:"Suburban",satLow:950,satHigh:1160,tuition:8700,totalCost:25958,meritGen:"High",meritModelCost:14000,me:true,ae:true,ie:false,academic:45,engineering:32,meAe:30,ieSe:10,energyCulture:30,supportCulture:55,alumni:40,brand:20,colinRank:40,applyTarget:null,overallFit:"A rare, brand-new undergraduate Aerospace Engineering degree and very low net cost stand out, but this is a small, commuter-heavy campus without the high-energy, tradition-rich atmosphere Colin values, and there's no Industrial or Systems Engineering option at all.",mismatchWatch:"Small, commuter-oriented campus with no Industrial/Systems Engineering — limited campus energy and program breadth.",site:"https://www.uhcl.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Houston%E2%80%93Clear_Lake"},
+{id:5,name:"University of Texas at Arlington",loc:"Arlington, TX",region:"South",type:"Public",inTexas:"Texas",undergrads:35000,setting:"Urban",satLow:1030,satHigh:1280,tuition:12000,totalCost:29562,meritGen:"High",meritModelCost:20500,me:true,ae:true,ie:true,academic:55,engineering:58,meAe:55,ieSe:60,energyCulture:45,supportCulture:50,alumni:55,brand:40,colinRank:54,applyTarget:null,overallFit:"Strong alignment here: a dedicated Aerospace degree plus an Industrial, Manufacturing & Systems Engineering program, at low in-state cost. The catch is campus culture — as a commuter-heavy DFW campus, it doesn't yet match Colin's preference for high-energy tradition.",mismatchWatch:"Commuter-heavy campus culture may not deliver the high-energy, tribal atmosphere Colin's looking for.",site:"https://www.uta.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Texas_at_Arlington"},
+{id:6,name:"University of Texas at San Antonio",loc:"San Antonio, TX",region:"South",type:"Public",inTexas:"Texas",undergrads:28000,setting:"Urban/suburban",satLow:1000,satHigh:1250,tuition:9400,totalCost:28240,meritGen:"Medium-High",meritModelCost:21000,me:true,ae:false,ie:true,academic:52,engineering:50,meAe:48,ieSe:50,energyCulture:55,supportCulture:55,alumni:52,brand:40,colinRank:54,applyTarget:null,overallFit:"Real Industrial and Systems Engineering degree and low in-state cost make UTSA financially attractive, but Aerospace is only a certificate, not a full major, and the developing campus culture is less tribal and high-energy than Colin's ideal fit.",mismatchWatch:"Aerospace is only a certificate, not a full degree; campus identity still developing.",site:"https://www.utsa.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Texas_at_San_Antonio"},
+{id:7,name:"Arizona State University",loc:"Tempe, AZ",region:"West",type:"Public",inTexas:"Out-of-State",undergrads:55000,setting:"Urban",satLow:1080,satHigh:1330,tuition:34100,totalCost:55100,meritGen:"Medium-High",meritModelCost:42500,me:true,ae:true,ie:true,academic:72,engineering:80,meAe:78,ieSe:62,energyCulture:92,supportCulture:60,alumni:72,brand:76,colinRank:78,applyTarget:"November",overallFit:"Large-scale Aerospace and Industrial Engineering programs with strong design-build teams fit Colin's interests well, and campus life is genuinely high-energy. Tradeoffs are out-of-state cost and a less tightly systems-branded industrial program than some peers.",mismatchWatch:"Out-of-state cost is real, and huge scale can dilute the tight-knit culture Colin wants.",site:"https://www.asu.edu",wiki:"https://en.wikipedia.org/wiki/Arizona_State_University"},
+{id:8,name:"Auburn University",loc:"Auburn, AL",region:"South",type:"Public",inTexas:"Out-of-State",undergrads:26000,setting:"College town",satLow:1170,satHigh:1350,tuition:34900,totalCost:63540,meritGen:"Medium",meritModelCost:56540,me:true,ae:true,ie:true,academic:74,engineering:80,meAe:74,ieSe:72,energyCulture:95,supportCulture:92,alumni:85,brand:80,colinRank:84,applyTarget:"November",overallFit:"A near-perfect match: dedicated Aerospace Engineering, an explicitly-named Industrial and Systems Engineering department, an established Design/Build/Fly team, and legendary tribal school spirit. Main downside is out-of-state cost and merit that doesn't fully offset it.",mismatchWatch:"At a 1380 SAT, Colin lands at the very bottom rung of Auburn's non-resident merit ladder (Academic Charter, $7,000/yr) — out-of-state cost stays high even with that award applied.",site:"https://www.auburn.edu",wiki:"https://en.wikipedia.org/wiki/Auburn_University"},
+{id:9,name:"Iowa State University",loc:"Ames, IA",region:"North",type:"Public",inTexas:"Out-of-State",undergrads:25300,setting:"College town",satLow:1090,satHigh:1330,tuition:28000,totalCost:43000,meritGen:"Medium",meritModelCost:35000,me:true,ae:true,ie:true,academic:70,engineering:74,meAe:74,ieSe:75,energyCulture:78,supportCulture:80,alumni:68,brand:62,colinRank:74,applyTarget:"August",overallFit:"Solid Aerospace Engineering with a strong AIAA design-competition culture and genuine college-town energy fit Colin well. It's a real regional/culture shift, though — a Midwest college town is a different vibe than the Sun Belt schools he's also considering.",mismatchWatch:"Cold Midwest college town is a real climate/culture shift from Texas and the Sun Belt.",site:"https://www.iastate.edu",wiki:"https://en.wikipedia.org/wiki/Iowa_State_University"},
+{id:10,name:"Oklahoma State University",loc:"Stillwater, OK",region:"South",type:"Public",inTexas:"Out-of-State",undergrads:21000,setting:"College town",satLow:1080,satHigh:1300,tuition:25600,totalCost:44500,meritGen:"High",meritModelCost:30500,me:true,ae:true,ie:true,academic:62,engineering:64,meAe:72,ieSe:62,energyCulture:82,supportCulture:80,alumni:68,brand:60,colinRank:70,applyTarget:null,overallFit:"Genuinely design-heavy Aerospace program — home to a rare turbojet aircraft design competition — plus Industrial Engineering & Management, at a real cost advantage via Oklahoma's exact merit grid. Strong Cowboy culture rounds out a well-balanced fit.",mismatchWatch:"Out-of-state cost is meaningful, though verified merit aid helps offset it somewhat.",site:"https://www.okstate.edu",wiki:"https://en.wikipedia.org/wiki/Oklahoma_State_University%E2%80%93Stillwater"},
+{id:11,name:"The University of Alabama",loc:"Tuscaloosa, AL",region:"South",type:"Public",inTexas:"Out-of-State",undergrads:32000,setting:"College town",satLow:1130,satHigh:1330,tuition:34500,totalCost:56500,meritGen:"High",meritModelCost:47000,me:true,ae:true,ie:false,academic:68,engineering:66,meAe:70,ieSe:30,energyCulture:95,supportCulture:78,alumni:80,brand:86,colinRank:78,applyTarget:null,overallFit:"Alabama's Aerospace program is strong and campus culture is legendarily high-energy and tribal — a great social fit. The real gap is engineering breadth: there's no True Industrial or Systems Engineering degree, only a narrower manufacturing-systems option.",mismatchWatch:"No True Industrial/Systems Engineering degree — only a narrower manufacturing-systems option within Mechanical.",site:"https://www.ua.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Alabama"},
+{id:12,name:"University of Arizona",loc:"Tucson, AZ",region:"West",type:"Public",inTexas:"Out-of-State",undergrads:36000,setting:"Urban",satLow:1090,satHigh:1350,tuition:37000,totalCost:58000,meritGen:"High",meritModelCost:45500,me:true,ae:true,ie:true,academic:74,engineering:76,meAe:70,ieSe:85,energyCulture:85,supportCulture:62,alumni:68,brand:68,colinRank:75,applyTarget:"November",overallFit:"Excellent alignment: Aerospace Engineering plus a department literally named Systems and Industrial Engineering, with solid campus energy. The main consideration is out-of-state cost, though a confirmed automatic award (~$12,500/yr at Colin's core GPA band) brings the net price down meaningfully.",mismatchWatch:"Out-of-state cost remains a factor even with Arizona's confirmed automatic merit tier applied.",site:"https://www.arizona.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Arizona"},
+{id:13,name:"University of Arkansas",loc:"Fayetteville, AR",region:"South",type:"Public",inTexas:"Out-of-State",undergrads:27000,setting:"College town",satLow:1080,satHigh:1290,tuition:30000,totalCost:51400,meritGen:"High",meritModelCost:36000,me:true,ae:false,ie:true,academic:63,engineering:58,meAe:40,ieSe:58,energyCulture:85,supportCulture:78,alumni:70,brand:65,colinRank:70,applyTarget:null,overallFit:"Arkansas offers real Industrial Engineering, strong Razorback school spirit, and a notable Texas-specific tuition discount (New Arkansan program). The limitation is Aerospace, which exists only as a concentration inside Mechanical Engineering, not a standalone degree.",mismatchWatch:"No standalone Aerospace degree — only a concentration within Mechanical Engineering.",site:"https://www.uark.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Arkansas"},
+{id:14,name:"University of Central Florida",loc:"Orlando, FL",region:"South",type:"Public",inTexas:"Out-of-State",undergrads:59000,setting:"Suburban",satLow:1210,satHigh:1340,tuition:22467,totalCost:39855,meritGen:"Medium",meritModelCost:35500,me:true,ae:true,ie:true,academic:68,engineering:70,meAe:68,ieSe:58,energyCulture:75,supportCulture:65,alumni:65,brand:65,colinRank:69,applyTarget:null,overallFit:"UCF offers real Aerospace, Mechanical, and Industrial Engineering degrees in Orlando's aerospace/defense corridor, at a genuinely low out-of-state cost. The tradeoff is scale — with 59,000 undergrads, campus culture and community can feel more diffuse than smaller, more tribal schools.",mismatchWatch:"Massive scale (59K undergrads) dilutes school spirit compared to more tribal, tight-knit campuses.",site:"https://www.ucf.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Central_Florida"},
+{id:15,name:"University of Kansas",loc:"Lawrence, KS",region:"North",type:"Public",inTexas:"Out-of-State",undergrads:19000,setting:"College town",satLow:1050,satHigh:1280,tuition:32000,totalCost:52000,meritGen:"High",meritModelCost:45000,me:true,ae:true,ie:false,academic:68,engineering:62,meAe:63,ieSe:15,energyCulture:78,supportCulture:78,alumni:65,brand:62,colinRank:71,applyTarget:null,overallFit:"Kansas brings a historic Aerospace Engineering program — rooted in Wichita's aviation industry — plus strong Jayhawk tradition and a real, GPA/SAT-based out-of-state merit ladder. The gap is Industrial Engineering, which isn't offered as a standalone degree here.",mismatchWatch:"No standalone Industrial Engineering degree, despite a strong historic Aerospace program.",site:"https://www.ku.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Kansas"},
+{id:16,name:"University of Oklahoma",loc:"Norman, OK",region:"South",type:"Public",inTexas:"Out-of-State",undergrads:22000,setting:"College town",satLow:1130,satHigh:1350,tuition:32000,totalCost:55000,meritGen:"High",meritModelCost:40000,me:true,ae:true,ie:true,academic:68,engineering:68,meAe:76,ieSe:68,energyCulture:90,supportCulture:80,alumni:75,brand:80,colinRank:77,applyTarget:"November",overallFit:"A standout combination: an Aerospace program with a distinctive Intelligent Aerospace Systems emphasis, an explicitly systems-branded Industrial Engineering department, strong Sooner school spirit, and a generous, verified-threshold merit scholarship for this exact profile.",mismatchWatch:"Out-of-state cost is real, though offset well by a strong, verified merit award.",site:"https://www.ou.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Oklahoma"},
+{id:17,name:"University of Tennessee, Knoxville",loc:"Knoxville, TN",region:"South",type:"Public",inTexas:"Out-of-State",undergrads:30000,setting:"College town",satLow:1130,satHigh:1340,tuition:33256,totalCost:54000,meritGen:"Medium",meritModelCost:49000,me:true,ae:true,ie:true,academic:70,engineering:74,meAe:74,ieSe:68,energyCulture:93,supportCulture:80,alumni:76,brand:84,colinRank:79,applyTarget:"November",overallFit:"Tennessee pairs a real Aerospace and Industrial & Systems Engineering program with legendary SEC school spirit and Rocky Top tradition — a strong culture match. Out-of-state cost is real, and the Volunteer Scholarship's biggest tiers require UT's own recalculated 'Core Weighted GPA,' which may or may not clear the 4.0+ needed for the mid-tier award.",mismatchWatch:"Out-of-state cost is meaningful, and the strongest merit tiers depend on UT's own core-GPA recalculation, not Colin's self-reported weighted GPA — real uncertainty on how much aid actually lands.",site:"https://www.utk.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Tennessee,_Knoxville"},
+{id:18,name:"Embry-Riddle Aeronautical University",loc:"Daytona Beach, FL",region:"South",type:"Private",inTexas:"Out-of-State",undergrads:7000,setting:"Suburban",satLow:1170,satHigh:1330,tuition:46000,totalCost:65700,meritGen:"High",meritModelCost:44500,me:true,ae:true,ie:false,academic:56,engineering:78,meAe:80,ieSe:10,energyCulture:55,supportCulture:75,alumni:72,brand:55,colinRank:70,applyTarget:null,overallFit:"Embry-Riddle is the most aerospace-specialized school on this list, with elite engineering resources and a deeply embedded alumni network in the industry. But with no Industrial or Systems Engineering path at all, it only partially matches Colin's dual interest.",mismatchWatch:"No Industrial or Systems Engineering path at all — a real gap despite elite aerospace strength.",site:"https://www.erau.edu",wiki:"https://en.wikipedia.org/wiki/Embry%E2%80%93Riddle_Aeronautical_University"},
+{id:19,name:"Florida Institute of Technology",loc:"Melbourne, FL",region:"South",type:"Private",inTexas:"Out-of-State",undergrads:3700,setting:"Urban",satLow:1130,satHigh:1320,tuition:45900,totalCost:65940,meritGen:"High",meritModelCost:46000,me:true,ae:true,ie:false,academic:58,engineering:56,meAe:66,ieSe:10,energyCulture:35,supportCulture:55,alumni:55,brand:30,colinRank:58,applyTarget:null,overallFit:"Florida Tech offers a genuinely elite, design-focused Aerospace Engineering program near Cape Canaveral, but has no Industrial or Systems Engineering path at all. Campus is small and niche, with modest school spirit and a limited alumni network.",mismatchWatch:"No Industrial or Systems Engineering path at all, despite strong, design-focused Aerospace.",site:"https://www.fit.edu",wiki:"https://en.wikipedia.org/wiki/Florida_Institute_of_Technology"},
+{id:20,name:"Saint Louis University",loc:"St. Louis, MO",region:"North",type:"Private",inTexas:"Out-of-State",undergrads:8000,setting:"Urban",satLow:1200,satHigh:1390,tuition:54000,totalCost:72000,meritGen:"Medium-High",meritModelCost:48000,me:true,ae:true,ie:false,academic:71,engineering:46,meAe:62,ieSe:10,energyCulture:40,supportCulture:72,alumni:62,brand:45,colinRank:59,applyTarget:null,overallFit:"Parks College brings a historic, respected Aerospace Engineering program, but there's no Industrial or Systems Engineering degree at all, and campus culture and alumni network both run more modest than Colin's other top options.",mismatchWatch:"No Industrial/Systems Engineering degree at all, and campus culture is comparatively low-energy.",site:"https://www.slu.edu",wiki:"https://en.wikipedia.org/wiki/Saint_Louis_University"},
+{id:21,name:"Southern Methodist University",loc:"Dallas, TX",region:"South",type:"Private",inTexas:"Out-of-State",undergrads:7300,setting:"Suburban",satLow:1330,satHigh:1470,tuition:67000,totalCost:89600,meritGen:"Medium",meritModelCost:74000,me:true,ae:false,ie:false,academic:74,engineering:54,meAe:35,ieSe:10,energyCulture:72,supportCulture:55,alumni:75,brand:55,colinRank:73,applyTarget:null,overallFit:"SMU offers a polished, high-energy campus with strong Boulevard tailgate culture and a genuinely powerful alumni network, but its Lyle School of Engineering lacks Aerospace or Industrial Engineering degrees — real limitations for Colin's specific engineering interests.",mismatchWatch:"No Aerospace or Industrial Engineering degree — a significant gap for Colin's specific focus.",site:"https://www.smu.edu",wiki:"https://en.wikipedia.org/wiki/Southern_Methodist_University"},
+{id:22,name:"University of Dayton",loc:"Dayton, OH",region:"North",type:"Private",inTexas:"Out-of-State",undergrads:8500,setting:"Urban",satLow:1180,satHigh:1350,tuition:50000,totalCost:68000,meritGen:"High",meritModelCost:39000,me:true,ae:false,ie:false,academic:68,engineering:58,meAe:58,ieSe:10,energyCulture:75,supportCulture:90,alumni:62,brand:40,colinRank:71,applyTarget:null,overallFit:"Dayton brings a tight-knit, spirited campus culture and a respected research profile (notably in aerospace/defense contracts), but engineering breadth is limited — no standalone Aerospace degree and no Industrial Engineering option constrain the fit here.",mismatchWatch:"No standalone Aerospace degree and no Industrial Engineering at all — a real engineering-breadth gap.",site:"https://www.udayton.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Dayton"},
+{id:23,name:"University of Miami",loc:"Coral Gables, FL",region:"South",type:"Private",inTexas:"Out-of-State",undergrads:12000,setting:"Urban",satLow:1330,satHigh:1470,tuition:65000,totalCost:90000,meritGen:"Medium",meritModelCost:75000,me:true,ae:true,ie:true,academic:76,engineering:63,meAe:65,ieSe:58,energyCulture:78,supportCulture:58,alumni:74,brand:78,colinRank:76,applyTarget:null,overallFit:"Miami stands out with the full Aerospace, Mechanical, and Industrial Engineering trio, a vibrant South Florida campus culture, and a strong, well-connected alumni network. High cost is the main tradeoff here, offset only partly by merit aid.",mismatchWatch:"High sticker cost, and merit aid likely won't fully close the gap for this profile.",site:"https://www.miami.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Miami"},
+{id:24,name:"University of Maryland",loc:"College Park, MD",region:"North",type:"Public",inTexas:"Out-of-State",undergrads:31000,setting:"Suburban",satLow:1390,satHigh:1530,tuition:41200,totalCost:56800,meritGen:"Low",meritModelCost:55000,me:true,ae:true,ie:false,academic:78,engineering:84,meAe:83,ieSe:25,energyCulture:68,supportCulture:62,alumni:76,brand:72,colinRank:67,applyTarget:null,overallFit:"Maryland's Aerospace Engineering program is genuinely elite — top 10 among public universities — and the Clark School's proximity to NASA Goddard, the Pentagon, and D.C.'s dense aerospace/defense contractor base gives real economic-outcome strength. The tradeoff is real: there's no undergraduate Industrial or Systems Engineering degree, and the DC-adjacent, career-driven campus culture runs cooler and more competitive than the tribal Southern schools on this list.",mismatchWatch:"No undergraduate Industrial or Systems Engineering degree at all — Systems Engineering exists only at the graduate level. Merit aid for out-of-state students is minimal and highly competitive, so cost stays close to full sticker price.",site:"https://www.umd.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Maryland,_College_Park"},
+{id:25,name:"California Polytechnic State University, San Luis Obispo",loc:"San Luis Obispo, CA",region:"West",type:"Public",inTexas:"Out-of-State",undergrads:22000,setting:"College town",satLow:1290,satHigh:1470,tuition:22934,totalCost:63750,meritGen:"Low",meritModelCost:60000,me:true,ae:true,ie:true,academic:80,engineering:88,meAe:90,ieSe:78,energyCulture:68,supportCulture:75,alumni:65,brand:52,colinRank:84,applyTarget:"November",overallFit:"A near-perfect technical match: the Aerospace program is nationally famous for co-inventing the CubeSat standard, and Industrial/Manufacturing Engineering has been ranked #1 in the country in its category — both taught through Cal Poly's hands-on 'Learn by Doing' philosophy that lines up exactly with Colin's design-build-fly instincts. The catch is distance from Texas, a quieter big-sports culture than the SEC/Big 12 schools, and essentially no merit aid to offset the out-of-state cost.",mismatchWatch:"Far from Texas, with a quieter, non-tribal campus culture (no big-time football scene) and almost no automatic merit aid — Cal Poly explicitly does not offer large merit scholarships, so cost stays close to full sticker.",site:"https://www.calpoly.edu",wiki:"https://en.wikipedia.org/wiki/California_Polytechnic_State_University"},
+{id:26,name:"University of Alabama in Huntsville",loc:"Huntsville, AL",region:"South",type:"Public",inTexas:"Out-of-State",undergrads:6800,setting:"Suburban",satLow:1195,satHigh:1440,tuition:26400,totalCost:46400,meritGen:"High",meritModelCost:33000,me:true,ae:true,ie:true,academic:60,engineering:64,meAe:72,ieSe:80,energyCulture:28,supportCulture:68,alumni:60,brand:28,colinRank:63,applyTarget:null,overallFit:"UAH offers one of the only true undergraduate 'Industrial and Systems Engineering' degrees on this list, with explicit Industrial and Systems Engineering tracks, alongside a combined Mechanical & Aerospace Engineering department sitting minutes from NASA Marshall Space Flight Center and the Redstone Arsenal missile-defense complex — an exceptional, if quiet, technical match. Merit aid for strong out-of-state students is generous and can cut cost substantially.",mismatchWatch:"Campus culture is famously low-key and 'no frills' — students consistently describe it as not a party school, with a much quieter social scene than every other option on this list. Smaller alumni network and far less national name recognition than the flagships.",site:"https://www.uah.edu",wiki:"https://en.wikipedia.org/wiki/University_of_Alabama_in_Huntsville"},
+{id:27,name:"Kansas State University",loc:"Manhattan, KS",region:"North",type:"Public",inTexas:"Out-of-State",undergrads:15650,setting:"College town",satLow:1030,satHigh:1280,tuition:28600,totalCost:45500,meritGen:"Medium",meritModelCost:35500,me:true,ae:false,ie:true,academic:50,engineering:55,meAe:45,ieSe:62,energyCulture:78,supportCulture:85,alumni:62,brand:55,colinRank:60,applyTarget:null,overallFit:"Kansas State pairs a real, well-regarded Industrial & Manufacturing Systems Engineering program with a famously tight-knit, 'K-State family' campus culture and passionate Big 12 spirit. The clear gap is Aerospace Engineering, which doesn't exist as a standalone degree here — mechanical engineering students get aero-adjacent design teams (rocketry, motorsports) but no formal AE major.",mismatchWatch:"No Aerospace Engineering degree at all — only design-team exposure within Mechanical Engineering. Overall academic selectivity and national engineering prestige are modest compared to other options on this list.",site:"https://www.k-state.edu",wiki:"https://en.wikipedia.org/wiki/Kansas_State_University"},
+{id:28,name:"North Carolina State University",loc:"Raleigh, NC",region:"South",type:"Public",inTexas:"Out-of-State",undergrads:28400,setting:"Urban",satLow:1300,satHigh:1470,tuition:33990,totalCost:49800,meritGen:"Low",meritModelCost:47500,me:true,ae:true,ie:true,academic:78,engineering:85,meAe:75,ieSe:75,energyCulture:72,supportCulture:65,alumni:72,brand:65,colinRank:76,applyTarget:"November",overallFit:"NC State's College of Engineering is genuinely elite — ranked in the top 30 nationally — with real Aerospace and Mechanical degrees inside one combined department, plus a well-established Fitts Department of Industrial & Systems Engineering. Its Research Triangle location (Cisco, IBM, SAS, Lenovo) adds strong economic-outcome credibility, though campus energy leans more STEM-driven than tribal-Southern.",mismatchWatch:"Merit aid for out-of-state students is thin — mostly competitive, donor-funded departmental scholarships rather than an automatic stat-based ladder, so cost stays close to full sticker price. Campus culture is more career-focused than high-energy.",site:"https://www.ncsu.edu",wiki:"https://en.wikipedia.org/wiki/North_Carolina_State_University"},
+{id:29,name:"Virginia Tech",loc:"Blacksburg, VA",region:"South",type:"Public",inTexas:"Out-of-State",undergrads:31000,setting:"College town",satLow:1280,satHigh:1450,tuition:38870,totalCost:63620,meritGen:"Low",meritModelCost:60000,me:true,ae:true,ie:true,academic:72,engineering:83,meAe:80,ieSe:90,energyCulture:92,supportCulture:90,alumni:76,brand:78,colinRank:85,applyTarget:"November",overallFit:"One of the strongest technical matches on this entire list: the Kevin T. Crofton Department of Aerospace and Ocean Engineering is well-regarded, and the Grado Department of Industrial and Systems Engineering is routinely ranked in the nation's top 10 — a genuinely elite ISE pedigree. Add in Virginia Tech's legendary 'Hokie Nation' spirit and an unusually strong, service-minded campus community (Ut Prosim), and this could be one of Colin's best overall fits.",mismatchWatch:"Far from Texas, with a high out-of-state sticker price and thin automatic merit aid — most scholarships are competitive and donor-funded rather than guaranteed.",site:"https://www.vt.edu",wiki:"https://en.wikipedia.org/wiki/Virginia_Tech"}
+];
+
+// ---------- Derive filter option sets ----------
+const TYPES = [...new Set(DATA.map(d=>d.type))].sort();
+const TX_OPTIONS = [...new Set(DATA.map(d=>d.inTexas))].sort();
+const REGIONS = [...new Set(DATA.map(d=>d.region))].sort();
+const SETTINGS = [...new Set(DATA.map(d=>d.setting))].sort();
+const ENG_DEGREES = [
+  {key:"me", label:"Mechanical"},
+  {key:"ae", label:"Aerospace"},
+  {key:"ie", label:"Industrial"}
+];
+
+const MMC_MIN = Math.min(...DATA.map(d=>d.meritModelCost));
+const MMC_MAX = Math.max(...DATA.map(d=>d.meritModelCost));
+
+// ---------- Fit Rating weighting (fixed — not user-editable) ----------
+// Eight factors, all 0-100 scale:
+//   ME/AE Rating 20% + IE/SE Rating 20% + Engineering Rating 15% + Academic Balance 10%
+//   + Culture (High Energy) 10% + Culture (Supportive) 10% + Alumni Network 5% + Public Brand 10%
+const weights = { engineering:15, meAe:20, ieSe:20, academic:10, energyCulture:10, supportCulture:10, alumni:5, brand:10 };
+
+function computeFitRating(d, w){
+  if(d.academic === null) return null;
+  const totalW = w.engineering + w.meAe + w.ieSe + w.academic + w.energyCulture + w.supportCulture + w.alumni + w.brand;
+  if(totalW <= 0) return null;
+  const weighted = w.engineering*d.engineering + w.meAe*d.meAe + w.ieSe*d.ieSe + w.academic*d.academic +
+                    w.energyCulture*d.energyCulture + w.supportCulture*d.supportCulture +
+                    w.alumni*d.alumni + w.brand*d.brand;
+  return Math.round(weighted/totalW);
+}
+const isRated = d => d.academic !== null;
+
+// ---------- State ----------
+let state = {
+  types: new Set(TYPES),
+  tx: new Set(TX_OPTIONS),
+  regions: new Set(REGIONS),
+  settings: new Set(SETTINGS),
+  engDegrees: new Set(),
+  mmcMax: MMC_MAX,
+  sortKey: "fitRating",
+  sortDir: -1,
+  view: "primary"
+};
+
+const fmt$ = v => "$" + v.toLocaleString("en-US");
+
+// ---------- Build filter UI ----------
+function buildCheckGroup(containerId, values, stateSet, countFn, labelFn, defaultChecked){
+  if (defaultChecked === undefined) defaultChecked = true;
+  const el = document.getElementById(containerId);
+  el.innerHTML = "";
+  values.forEach(v=>{
+    const id = containerId+"-"+String(v).replace(/[^a-z0-9]/gi,"_");
+    const label = document.createElement("label");
+    const isChecked = stateSet.has(v);
+    const displayLabel = labelFn ? labelFn(v) : v;
+    label.innerHTML = `<input type="checkbox" id="${id}" ${isChecked ? "checked" : ""}>
+      <span>${displayLabel}</span>
+      <span class="check-count">${countFn(v)}</span>`;
+    el.appendChild(label);
+    label.querySelector("input").addEventListener("change", e=>{
+      if(e.target.checked) stateSet.add(v); else stateSet.delete(v);
+      render();
+    });
+  });
+}
+
+function refreshCheckGroups(){
+  buildCheckGroup("typeFilters", TYPES, state.types, v=>DATA.filter(d=>d.type===v).length);
+  buildCheckGroup("txFilters", TX_OPTIONS, state.tx, v=>DATA.filter(d=>d.inTexas===v).length);
+  buildCheckGroup("regionFilters", REGIONS, state.regions, v=>DATA.filter(d=>d.region===v).length);
+  buildCheckGroup("settingFilters", SETTINGS, state.settings, v=>DATA.filter(d=>d.setting===v).length);
+  buildCheckGroup("engFilters", ENG_DEGREES.map(e=>e.key), state.engDegrees,
+    key=>DATA.filter(d=>d[key]).length,
+    key=>ENG_DEGREES.find(e=>e.key===key).label,
+    false
+  );
+  syncCheckboxVisuals();
+}
+
+function syncCheckboxVisuals(){
+  document.querySelectorAll('#typeFilters input').forEach((cb,i)=>cb.checked = state.types.has(TYPES[i]));
+  document.querySelectorAll('#txFilters input').forEach((cb,i)=>cb.checked = state.tx.has(TX_OPTIONS[i]));
+  document.querySelectorAll('#regionFilters input').forEach((cb,i)=>cb.checked = state.regions.has(REGIONS[i]));
+  document.querySelectorAll('#settingFilters input').forEach((cb,i)=>cb.checked = state.settings.has(SETTINGS[i]));
+  document.querySelectorAll('#engFilters input').forEach((cb,i)=>cb.checked = state.engDegrees.has(ENG_DEGREES[i].key));
+}
+
+// ---------- Slider ----------
+const mmcSlider = document.getElementById("mmcSlider");
+
+function initSliders(){
+  mmcSlider.min = MMC_MIN; mmcSlider.max = MMC_MAX; mmcSlider.value = MMC_MAX;
+  document.getElementById("mmcMinLbl").textContent = fmt$(MMC_MIN);
+  document.getElementById("mmcMaxLbl").textContent = fmt$(MMC_MAX);
+  updateSliderLabels();
+}
+function updateSliderLabels(){
+  document.getElementById("mmcVal").textContent = "≤ " + fmt$(state.mmcMax);
+}
+mmcSlider.addEventListener("input", e=>{
+  state.mmcMax = Number(e.target.value);
+  updateSliderLabels();
+  render();
+});
+
+// ---------- Filtering ----------
+function getFiltered(){
+  return DATA.filter(d =>
+    state.types.has(d.type) &&
+    state.tx.has(d.inTexas) &&
+    state.regions.has(d.region) &&
+    state.settings.has(d.setting) &&
+    d.meritModelCost <= state.mmcMax &&
+    [...state.engDegrees].every(key => d[key])
+  );
+}
+
+// ---------- Sorting ----------
+function getSorted(list){
+  const key = state.sortKey, dir = state.sortDir;
+  return [...list].sort((a,b)=>{
+    let av = key === "fitRating" ? computeFitRating(a, weights) : a[key];
+    let bv = key === "fitRating" ? computeFitRating(b, weights) : b[key];
+    // unrated (null) values always sort to the bottom, regardless of direction
+    if(av === null && bv === null) return 0;
+    if(av === null) return 1;
+    if(bv === null) return -1;
+    if(typeof av === "string"){ av = av.toLowerCase(); bv = bv.toLowerCase(); }
+    if(av < bv) return -1*dir;
+    if(av > bv) return 1*dir;
+    return 0;
+  });
+}
+
+// ---------- Table column definitions (Primary vs Ratings views) ----------
+const PRIMARY_COLUMNS = [
+  {key:"type", label:"Type", cell:d=>`<td>${typeBadge(d)}</td>`},
+  {key:"fitRating", label:"Fit Rating", cell:d=>`<td class="mono">${ratingCell(computeFitRating(d, weights), true)}</td>`},
+  {key:"name", label:"School", cell:d=>`<td class="wrap-cell"><a href="#" class="school-name school-name-link" data-id="${d.id}">${d.name}</a><span class="school-loc">${d.loc}</span></td>`},
+  {key:"satLow", label:"SAT 25–75", cell:d=>`<td class="mono">${d.satLow}–${d.satHigh}</td>`},
+  {key:"totalCost", label:"Total Cost", cell:d=>`<td class="mono">${fmt$(d.totalCost)}<span class="cost-sub">Tuition ${fmt$(d.tuition)}</span></td>`},
+  {key:"meritModelCost", label:"COA Projected", cell:d=>`<td class="mono cost-good">${fmt$(d.meritModelCost)}</td>`},
+  {key:null, label:"Degrees", cell:d=>`<td class="eng-cell">${renderEngBadges(d)}</td>`},
+  {key:"applyTarget", label:"Apply Target", cell:d=>`<td class="apply-target">${d.applyTarget ? d.applyTarget : '<span class="no-target">—</span>'}</td>`},
+  {key:null, label:"Links", cell:d=>`<td class="links"><a href="${d.site}" target="_blank" rel="noopener">Site</a><a href="${d.wiki}" target="_blank" rel="noopener">Wiki</a></td>`}
+];
+
+const RATINGS_COLUMNS = [
+  {key:"name", label:"School", cell:d=>`<td class="wrap-cell"><a href="#" class="school-name school-name-link" data-id="${d.id}">${d.name}</a><span class="school-loc">${d.loc}</span></td>`},
+  {key:"fitRating", label:"Fit Rating", cell:d=>`<td class="mono">${ratingCell(computeFitRating(d, weights), true)}</td>`},
+  {key:"engineering", label:"Engineer.", cell:d=>`<td class="mono">${ratingCell(d.engineering)}</td>`},
+  {key:"meAe", label:"ME/AE", cell:d=>`<td class="mono">${ratingCell(d.meAe)}</td>`},
+  {key:"ieSe", label:"IE/SE", cell:d=>`<td class="mono">${ratingCell(d.ieSe)}</td>`},
+  {key:"academic", label:"Academic", cell:d=>`<td class="mono">${ratingCell(d.academic)}</td>`},
+  {key:"energyCulture", label:"Energy", cell:d=>`<td class="mono">${ratingCell(d.energyCulture)}</td>`},
+  {key:"supportCulture", label:"Support", cell:d=>`<td class="mono">${ratingCell(d.supportCulture)}</td>`},
+  {key:"alumni", label:"Alumni", cell:d=>`<td class="mono">${ratingCell(d.alumni)}</td>`},
+  {key:"brand", label:"Brand", cell:d=>`<td class="mono">${ratingCell(d.brand)}</td>`}
+];
+
+function getActiveColumns(){
+  return state.view === "ratings" ? RATINGS_COLUMNS : PRIMARY_COLUMNS;
+}
+
+function renderTableHead(){
+  const cols = getActiveColumns();
+  const rowHtml = cols.map(c => c.key
+    ? `<th data-key="${c.key}">${c.label} <span class="arrow">↕</span></th>`
+    : `<th>${c.label}</th>`
+  ).join("");
+  document.getElementById("resultsHead").innerHTML = `<tr>${rowHtml}</tr>`;
+}
+
+// Event delegation for column-header sorting — survives the header being
+// rebuilt whenever the active view (Primary/Ratings) changes.
+document.getElementById("resultsHead").addEventListener("click", e=>{
+  const th = e.target.closest("th[data-key]");
+  if(!th) return;
+  const key = th.dataset.key;
+  if(state.sortKey === key){ state.sortDir *= -1; }
+  else { state.sortKey = key; state.sortDir = 1; }
+  render();
+});
+
+// Views selector (Primary / Ratings)
+document.getElementById("viewSelector").addEventListener("click", e=>{
+  const btn = e.target.closest(".view-btn");
+  if(!btn) return;
+  state.view = btn.dataset.view;
+  document.querySelectorAll(".view-btn").forEach(b=>b.classList.toggle("active", b === btn));
+  render();
+});
+
+// ---------- Render ----------
+function renderEngBadges(d){
+  return ENG_DEGREES.map(e => {
+    const has = d[e.key];
+    const abbr = e.key.toUpperCase();
+    return `<span class="eng-badge ${has ? 'eng-yes' : 'eng-no'}" title="${e.label} Engineering: ${has ? 'Offered' : 'Not offered'}">${abbr}</span>`;
+  }).join("");
+}
+
+function typeBadge(d){
+  const cls = d.type === "Public" ? "type-public" : "type-private";
+  const label = d.type === "Public" ? "Public" : "Private";
+  return `<span class="type-badge ${cls}">${label}</span>`;
+}
+
+function ratingCell(v, bold){
+  if(v === null) return '<span style="color:var(--ink-soft);">—</span>';
+  return bold ? `<b style="color:var(--maroon);">${v}</b>` : v;
+}
+
+// ---------- ME/AE & IE/SE program notes (pedigree context behind the two rating columns) ----------
+const PROGRAM_INFO = {
+"Texas A&M University":{meAeNote:"Elite, ABET-accredited Aerospace Engineering — deep capstone design, UAS, and rocketry programs — alongside a separate, well-resourced Mechanical Engineering department.",ieSeNote:"The Wm Michael Barnes '64 Department of Industrial and Systems Engineering is explicitly branded for systems work, one of the strongest ISE programs in the country.",meAeLinks:[{label:"AE Program",url:"https://engineering.tamu.edu/aerospace/index.html"},{label:"ME Program",url:"https://engineering.tamu.edu/mechanical/index.html"}],ieSeLinks:[{label:"ISE Program",url:"https://engineering.tamu.edu/industrial/index.html"}]},
+"Texas Tech University":{meAeNote:"No standalone Aerospace major — it's only a minor within Mechanical Engineering, so ME/AE pedigree is modest.",ieSeNote:"Industrial, Manufacturing & Systems Engineering exists as a real department, though it isn't a top-tier systems-branded program nationally.",meAeLinks:[{label:"ME Program",url:"https://www.depts.ttu.edu/me/"}],ieSeLinks:[{label:"IMSE Program",url:"https://www.depts.ttu.edu/imse/"}]},
+"University of Houston":{meAeNote:"Aerospace Engineering is graduate-only here — the \"Mechanical & Aerospace\" department name is aspirational for undergrads.",ieSeNote:"Industrial & Systems Engineering carries real weight, recently expanded to include a dedicated undergraduate Systems Engineering degree.",meAeLinks:[{label:"MAE Program",url:"https://www.me.uh.edu/"}],ieSeLinks:[{label:"ISE Program",url:"https://www.ie.uh.edu/"}]},
+"University of Houston-Clear Lake":{meAeNote:"A brand-new, dedicated undergraduate Aerospace Engineering degree — one of only a handful in Texas — alongside a separate Mechanical Engineering program.",ieSeNote:"No Industrial or Systems Engineering program at all.",meAeLinks:[{label:"AE Program",url:"https://www.uhcl.edu/science-engineering/departments/engineering/aerospace-engineering/"},{label:"ME Program",url:"https://www.uhcl.edu/science-engineering/departments/engineering/mechanical-engineering/"}],ieSeLinks:[]},
+"University of Texas at Arlington":{meAeNote:"A dedicated Aerospace Engineering degree sits within a combined Mechanical & Aerospace Engineering department.",ieSeNote:"The \"Industrial, Manufacturing & Systems Engineering\" department has systems explicitly in the name, with a real Industrial Engineering degree.",meAeLinks:[{label:"MAE Program",url:"https://www.uta.edu/academics/schools-colleges/engineering/academics/departments/mechanical-aerospace"}],ieSeLinks:[{label:"IMSE Program",url:"https://www.uta.edu/academics/schools-colleges/engineering/academics/departments/industrial"}]},
+"University of Texas at San Antonio":{meAeNote:"Mechanical Engineering is a full degree, but Aerospace is only a certificate, not a full major, so the aerospace side is thin.",ieSeNote:"Industrial and Systems Engineering is a real, explicitly-branded degree within the same combined department.",meAeLinks:[{label:"Dept. Page",url:"https://klesse.utsa.edu/mechanical/"}],ieSeLinks:[{label:"ISE Program",url:"https://klesse.utsa.edu/mechanical/"}]},
+"Arizona State University":{meAeNote:"Both Aerospace and Mechanical Engineering are offered at real scale within the Fulton Schools, with strong design-build teams.",ieSeNote:"Industrial Engineering is a genuine ABET-accredited program, though it isn't specifically \"systems\"-branded.",meAeLinks:[{label:"SEMTE Programs",url:"https://semte.engineering.asu.edu/degrees/undergraduate/"}],ieSeLinks:[{label:"IE Program",url:"https://scai.engineering.asu.edu/industrial-engineering-bse/"}]},
+"Auburn University":{meAeNote:"Dedicated, well-regarded Aerospace Engineering paired with an established Design/Build/Fly team culture, plus a separate, large Mechanical Engineering department.",ieSeNote:"A department literally named \"Industrial and Systems Engineering\" — a textbook match for this factor.",meAeLinks:[{label:"AE Program",url:"https://eng.auburn.edu/aero/"},{label:"ME Program",url:"https://eng.auburn.edu/mech/"}],ieSeLinks:[{label:"ISE Program",url:"https://eng.auburn.edu/insy/"}]},
+"Iowa State University":{meAeNote:"Solid, well-established Aerospace Engineering with strong design-competition culture (AIAA teams), plus a separate Mechanical Engineering department.",ieSeNote:"Industrial and Manufacturing Systems Engineering is a real department, though not systems-branded specifically.",meAeLinks:[{label:"AE Program",url:"https://www.engineering.iastate.edu/undergraduate-majors-and-minors/aerospace-engineering/"},{label:"ME Program",url:"https://www.engineering.iastate.edu/undergraduate-majors-and-minors/mechanical-engineering/"}],ieSeLinks:[{label:"IMSE Program",url:"https://www.imse.iastate.edu/"}]},
+"Oklahoma State University":{meAeNote:"A genuinely design-heavy Aerospace program — home to the only undergrad aircraft design competition in the country to feature turbojet engines — within a combined Mechanical and Aerospace Engineering school.",ieSeNote:"Industrial Engineering & Management is a real, respected degree.",meAeLinks:[{label:"MAE Program",url:"https://ceat.okstate.edu/mae"}],ieSeLinks:[{label:"IEM Program",url:"https://ceat.okstate.edu/iem"}]},
+"The University of Alabama":{meAeNote:"Aerospace Engineering pedigree is solid and long-accredited, in a separate department from Mechanical Engineering.",ieSeNote:"No true Industrial or Systems Engineering degree — only a Manufacturing Systems Engineering option within Mechanical.",meAeLinks:[{label:"AE Program",url:"https://aem.eng.ua.edu/"},{label:"ME Program",url:"https://me.eng.ua.edu/"}],ieSeLinks:[]},
+"University of Arizona":{meAeNote:"Well-regarded Aerospace Engineering within a combined Aerospace and Mechanical Engineering department.",ieSeNote:"A department explicitly named \"Systems and Industrial Engineering\" — the nation's first academic systems engineering program — offering real degrees in both Systems and Industrial Engineering.",meAeLinks:[{label:"AME Program",url:"https://ame.engineering.arizona.edu/"}],ieSeLinks:[{label:"SIE Program",url:"https://sie.engineering.arizona.edu/"}]},
+"University of Arkansas":{meAeNote:"Aerospace exists only as a concentration inside Mechanical Engineering, not a standalone degree, which caps ME/AE pedigree.",ieSeNote:"Industrial Engineering (with an Operations Analytics option) is a real, well-regarded standalone department.",meAeLinks:[{label:"ME Program",url:"https://engineering.uark.edu/mechanical-engineering/"}],ieSeLinks:[{label:"IE Program",url:"https://industrial-engineering.uark.edu/"}]},
+"University of Central Florida":{meAeNote:"Real Aerospace and Mechanical Engineering degrees sit inside a combined department, inside Orlando's aerospace/defense corridor.",ieSeNote:"Industrial Engineering and Management Systems is a genuine standalone department with strong NASA and defense ties.",meAeLinks:[{label:"MAE Program",url:"https://mae.ucf.edu/"}],ieSeLinks:[{label:"IEMS Program",url:"https://iems.ucf.edu/"}]},
+"University of Kansas":{meAeNote:"A historic, well-regarded Aerospace Engineering program rooted in Wichita's aviation industry, in a separate department from Mechanical Engineering.",ieSeNote:"No standalone Industrial or Systems Engineering degree at all.",meAeLinks:[{label:"AE Program",url:"https://ae.ku.edu/"},{label:"ME Program",url:"https://me.ku.edu/"}],ieSeLinks:[]},
+"University of Oklahoma":{meAeNote:"Aerospace Engineering has a distinctive \"Intelligent Aerospace Systems\" emphasis within a combined Aerospace and Mechanical Engineering school.",ieSeNote:"The School of Industrial and Systems Engineering is explicitly systems-branded — strong pedigree.",meAeLinks:[{label:"AME Program",url:"https://www.ou.edu/coe/ame"}],ieSeLinks:[{label:"ISE Program",url:"https://www.ou.edu/coe/ise"}]},
+"University of Tennessee, Knoxville":{meAeNote:"A real, respected Aerospace Engineering program within a combined Mechanical and Aerospace Engineering department.",ieSeNote:"The Department of Industrial and Systems Engineering carries genuine name recognition in the field.",meAeLinks:[{label:"MAE Program",url:"https://tickle.utk.edu/mae/"}],ieSeLinks:[{label:"ISE Program",url:"https://tickle.utk.edu/ise/"}]},
+"Embry-Riddle Aeronautical University":{meAeNote:"The most aerospace-specialized brand and industry pipeline on this list, though independent outcomes data ranks its Aerospace Engineering program more mid-pack than its reputation alone suggests, likely because its broader aviation-degree cohort (pilots, aviation science) dilutes engineering-specific outcomes data.",ieSeNote:"No Industrial or Systems Engineering program at all.",meAeLinks:[{label:"AE Program",url:"https://daytonabeach.erau.edu/college-engineering/aerospace"},{label:"ME Program",url:"https://erau.edu/academics/colleges/daytona-beach-college-of-engineering/mechanical-engineering"}],ieSeLinks:[]},
+"Florida Institute of Technology":{meAeNote:"A genuinely strong, design-focused Aerospace Engineering program near Cape Canaveral, in a separate department from Mechanical Engineering.",ieSeNote:"No Industrial or Systems Engineering path at all.",meAeLinks:[{label:"AE Program",url:"https://www.fit.edu/programs/aerospace-engineering-bs/"},{label:"ME Program",url:"https://www.fit.edu/mechanical-and-civil-engineering/"}],ieSeLinks:[]},
+"Saint Louis University":{meAeNote:"Parks College has a historic, once-elite Aerospace Engineering pedigree that has faded somewhat in national standing, within a combined Aerospace and Mechanical Engineering department.",ieSeNote:"No Industrial or Systems Engineering degree at all.",meAeLinks:[{label:"AME Program",url:"https://www.slu.edu/science-and-engineering/academics/aerospace-and-mechanical-engineering/index.php"}],ieSeLinks:[]},
+"Southern Methodist University":{meAeNote:"No Aerospace Engineering degree at all, and Mechanical Engineering pedigree is modest.",ieSeNote:"No Industrial or Systems Engineering program either — the weakest technical match on this list.",meAeLinks:[{label:"ME Program",url:"https://www.smu.edu/lyle/departments/me"}],ieSeLinks:[]},
+"University of Dayton":{meAeNote:"No standalone Aerospace degree, though Mechanical Engineering (with an optional aerospace concentration) benefits from real aerospace/defense research ties via the university's research institute.",ieSeNote:"No Industrial or Systems Engineering program exists.",meAeLinks:[{label:"ME/AE Program",url:"https://udayton.edu/engineering/academics/mechanical-aerospace/index.php"}],ieSeLinks:[]},
+"University of Miami":{meAeNote:"A genuine Aerospace and Mechanical Engineering pairing within a combined department.",ieSeNote:"Industrial and Systems Engineering is a real, standalone department, adding credible, growing pedigree.",meAeLinks:[{label:"MAE Program",url:"https://mae.coe.miami.edu/"}],ieSeLinks:[{label:"ISE Program",url:"https://ise.coe.miami.edu/"}]},
+"University of Maryland":{meAeNote:"The Clark School's Aerospace Engineering program is genuinely elite — top 10 among public universities nationally — in a separate department from Mechanical Engineering.",ieSeNote:"No undergraduate Industrial or Systems Engineering degree; Systems Engineering exists only as a graduate program through the well-regarded Institute for Systems Research.",meAeLinks:[{label:"AE Program",url:"https://aero.umd.edu/"},{label:"ME Program",url:"https://me.umd.edu/"}],ieSeLinks:[]},
+"California Polytechnic State University, San Luis Obispo":{meAeNote:"The aerospace program is famous nationally for co-inventing the CubeSat standard, in a separate department from Mechanical Engineering, both driven by Cal Poly's hands-on 'Learn by Doing' philosophy.",ieSeNote:"Industrial/Manufacturing Engineering has been ranked #1 among schools where a bachelor's or master's is the highest degree offered; against the full national field including major research universities, it ranks a still-strong #22.",meAeLinks:[{label:"AE Program",url:"https://www.calpoly.edu/major/aerospace-engineering"},{label:"ME Program",url:"https://me.calpoly.edu/"}],ieSeLinks:[{label:"IME Program",url:"https://ime.calpoly.edu/"}]},
+"University of Alabama in Huntsville":{meAeNote:"A combined Mechanical & Aerospace Engineering department sitting minutes from NASA Marshall Space Flight Center.",ieSeNote:"One of the only schools on this list with an undergraduate degree literally named \"Industrial and Systems Engineering,\" offering explicit Industrial Engineering and Systems Engineering tracks.",meAeLinks:[{label:"MAE Program",url:"https://www.uah.edu/eng/departments/mae"}],ieSeLinks:[{label:"ISEEM Program",url:"https://www.uah.edu/eng/departments/iseem"}]},
+"Kansas State University":{meAeNote:"Mechanical Engineering is a real, respected program with aero/rocketry design-team clubs, but there's no standalone Aerospace Engineering degree.",ieSeNote:"A well-established Industrial and Manufacturing Systems Engineering department with a real, ABET-accredited Industrial Engineering degree.",meAeLinks:[{label:"ME Program",url:"https://www.mne.k-state.edu/"}],ieSeLinks:[{label:"IMSE Program",url:"https://imse.k-state.edu/"}]},
+"North Carolina State University":{meAeNote:"Aerospace and Mechanical Engineering sit within one combined, highly-ranked department (the College of Engineering is top 30 nationally).",ieSeNote:"The Edward P. Fitts Department of Industrial and Systems Engineering is a well-established, historically respected ISE program.",meAeLinks:[{label:"MAE Program",url:"https://mae.ncsu.edu/"}],ieSeLinks:[{label:"ISE Program",url:"https://ise.ncsu.edu/"}]},
+"Virginia Tech":{meAeNote:"The Kevin T. Crofton Department of Aerospace and Ocean Engineering is a separate, well-regarded department from Mechanical Engineering, with strong ties to NASA Langley.",ieSeNote:"The Grado Department of Industrial and Systems Engineering is routinely ranked among the nation's top 10 ISE programs — genuinely elite pedigree.",meAeLinks:[{label:"AOE Program",url:"https://www.aoe.vt.edu/"},{label:"ME Program",url:"https://me.vt.edu/"}],ieSeLinks:[{label:"ISE Program",url:"https://www.ise.vt.edu/"}]}
+};
+
+// ---------- Top 5 ----------
+function renderProgramLinks(links){
+  if(!links || links.length === 0) return "";
+  return " " + links.map(l => `<a href="${l.url}" target="_blank" rel="noopener">[${l.label}]</a>`).join(" ");
+}
+
+function buildFitCard(d, fit, rank){
+  const info = PROGRAM_INFO[d.name] || {meAeNote:"",ieSeNote:"",meAeLinks:[],ieSeLinks:[]};
+  const rankBadge = rank !== null ? `<span class="t5-rank">${rank}</span>` : "";
+  return `
+    <div class="t5-card ${rank === 1 ? 't5-rank1' : ''}">
+      <div class="t5-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+            ${rankBadge}
+            <span class="t5-name">${d.name}</span>
+          </div>
+          <div class="t5-loc">${d.loc}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="t5-fit">${fit}</div>
+          <div class="t5-fit-label">Fit Rating</div>
+        </div>
+      </div>
+      <div class="t5-badge-row">
+        <div class="t5-setting">${d.setting}</div>
+        <div class="t5-setting">${d.undergrads.toLocaleString()} undergrads</div>
+      </div>
+      <div class="t5-overallfit">${d.overallFit}</div>
+      <div class="t5-factors">
+        <div class="t5-factor"><span>Engineering</span><b>${d.engineering}</b></div>
+        <div class="t5-factor"><span>ME/AE</span><b>${d.meAe}</b></div>
+        <div class="t5-factor"><span>IE/SE</span><b>${d.ieSe}</b></div>
+        <div class="t5-factor"><span>Academic</span><b>${d.academic}</b></div>
+        <div class="t5-factor"><span>Energy Culture</span><b>${d.energyCulture}</b></div>
+        <div class="t5-factor"><span>Support Culture</span><b>${d.supportCulture}</b></div>
+        <div class="t5-factor"><span>Alumni Net.</span><b>${d.alumni}</b></div>
+        <div class="t5-factor"><span>Public Brand</span><b>${d.brand}</b></div>
+      </div>
+      <div class="t5-degreefit"><b>ME/AE:</b> ${info.meAeNote}${renderProgramLinks(info.meAeLinks)}</div>
+      <div class="t5-degreefit"><b>IE/SE:</b> ${info.ieSeNote}${renderProgramLinks(info.ieSeLinks)}</div>
+      <div class="t5-mismatch"><b>⚠ Mismatch Watch:</b> ${d.mismatchWatch}</div>
+    </div>
+  `;
+}
+
+function renderTopFive(filtered){
+  const grid = document.getElementById("top5Grid");
+  const rated = filtered.filter(isRated)
+                         .map(d => ({d, fit: computeFitRating(d, weights)}))
+                         .sort((a,b)=>b.fit - a.fit)
+                         .slice(0,5);
+
+  if(rated.length === 0){
+    grid.innerHTML = `<div class="top5-empty">No schools match your current filters. Try widening a filter or raising the COA Projected ceiling.</div>`;
+    return;
+  }
+
+  grid.innerHTML = rated.map(({d, fit},i) => buildFitCard(d, fit, i+1)).join("");
+}
+
+function render(){
+  renderTableHead();
+  const filtered = getSorted(getFiltered());
+  const body = document.getElementById("resultsBody");
+  const empty = document.getElementById("emptyState");
+  const table = document.getElementById("resultsTable");
+  const cols = getActiveColumns();
+
+  document.getElementById("resultCount").textContent = filtered.length;
+
+  document.querySelectorAll("#resultsTable thead th[data-key]").forEach(th=>{
+    th.classList.toggle("active", th.dataset.key === state.sortKey);
+    const arrow = th.querySelector(".arrow");
+    if(th.dataset.key === state.sortKey){
+      arrow.textContent = state.sortDir === 1 ? "↑" : "↓";
+    } else {
+      arrow.textContent = "↕";
+    }
+  });
+
+  if(filtered.length === 0){
+    body.innerHTML = "";
+    table.style.display = "none";
+    empty.style.display = "block";
+  } else {
+    table.style.display = "table";
+    empty.style.display = "none";
+    body.innerHTML = filtered.map(d=>`<tr>${cols.map(c=>c.cell(d)).join("")}</tr>`).join("");
+  }
+
+  renderTally(filtered);
+  renderTopFive(filtered);
+}
+
+function renderTally(filtered){
+  const tally = document.getElementById("tally");
+  if(filtered.length === 0){
+    tally.innerHTML = `
+      <div class="tally-cell"><div class="tally-label">Matching schools</div><div class="tally-value accent">0</div></div>
+      <div class="tally-cell"><div class="tally-label">Total cost range</div><div class="tally-value">—</div></div>
+      <div class="tally-cell"><div class="tally-label">Merit model cost range</div><div class="tally-value">—</div></div>
+    `;
+    return;
+  }
+  const costs = filtered.map(d=>d.totalCost);
+  const mmcs = filtered.map(d=>d.meritModelCost);
+  tally.innerHTML = `
+    <div class="tally-cell"><div class="tally-label">Matching schools</div><div class="tally-value accent">${filtered.length}</div></div>
+    <div class="tally-cell"><div class="tally-label">Total cost range</div><div class="tally-value">${fmt$(Math.min(...costs))} – ${fmt$(Math.max(...costs))}</div></div>
+    <div class="tally-cell"><div class="tally-label">Merit model cost range</div><div class="tally-value">${fmt$(Math.min(...mmcs))} – ${fmt$(Math.max(...mmcs))}</div></div>
+  `;
+}
+
+// ---------- Settings modal (Fit Rating weighting — read-only display) ----------
+const WEIGHT_FIELDS = [
+  {key:"meAe", label:"ME/AE Rating"},
+  {key:"ieSe", label:"IE/SE Rating"},
+  {key:"engineering", label:"Engineering Rating"},
+  {key:"academic", label:"Academic Balance"},
+  {key:"energyCulture", label:"Culture — High Energy"},
+  {key:"supportCulture", label:"Culture — Supportive"},
+  {key:"alumni", label:"Alumni Network"},
+  {key:"brand", label:"Public Brand"}
+];
+
+function renderWeightDisplay(){
+  const el = document.getElementById("weightSliders");
+  el.innerHTML = WEIGHT_FIELDS.map(f => `
+    <div class="weight-row">
+      <div class="weight-label-row">
+        <span>${f.label}</span>
+        <span class="weight-pct">${weights[f.key]}%</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+const settingsModal = document.getElementById("settingsModal");
+
+function openSettingsModal(){
+  renderWeightDisplay();
+  settingsModal.hidden = false;
+}
+function closeSettingsModal(){
+  settingsModal.hidden = true;
+}
+
+document.getElementById("settingsLink").addEventListener("click", e => {
+  e.preventDefault();
+  openSettingsModal();
+});
+document.getElementById("modalCloseBtn").addEventListener("click", closeSettingsModal);
+document.getElementById("modalCloseBtn2").addEventListener("click", closeSettingsModal);
+settingsModal.addEventListener("click", e => {
+  if(e.target === settingsModal) closeSettingsModal();
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && !settingsModal.hidden) closeSettingsModal();
+  if(e.key === "Escape" && !schoolCardModal.hidden) closeSchoolCardModal();
+});
+
+// ---------- School detail card modal ----------
+const schoolCardModal = document.getElementById("schoolCardModal");
+
+function openSchoolCard(schoolId){
+  const d = DATA.find(x => x.id === schoolId);
+  if(!d) return;
+  const fit = computeFitRating(d, weights);
+  document.getElementById("schoolCardContent").innerHTML = buildFitCard(d, fit, null);
+  schoolCardModal.hidden = false;
+}
+function closeSchoolCardModal(){
+  schoolCardModal.hidden = true;
+}
+
+document.getElementById("schoolCardCloseBtn").addEventListener("click", closeSchoolCardModal);
+schoolCardModal.addEventListener("click", e => {
+  if(e.target === schoolCardModal) closeSchoolCardModal();
+});
+// Event delegation: table rows are rebuilt on every render(), so listen on the
+// static container rather than re-binding a listener to each link every time.
+document.getElementById("resultsBody").addEventListener("click", e => {
+  const link = e.target.closest(".school-name-link");
+  if(!link) return;
+  e.preventDefault();
+  openSchoolCard(Number(link.dataset.id));
+});
+
+// ---------- Reset ----------
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  state = {
+    types: new Set(TYPES),
+    tx: new Set(TX_OPTIONS),
+    regions: new Set(REGIONS),
+    settings: new Set(SETTINGS),
+    engDegrees: new Set(),
+    mmcMax: MMC_MAX,
+    sortKey: "fitRating",
+    sortDir: -1,
+    view: state.view
+  };
+  mmcSlider.value = MMC_MAX;
+  updateSliderLabels();
+  syncCheckboxVisuals();
+  render();
+});
+
+// ---------- Init ----------
+(function init(){
+  initSliders();
+  refreshCheckGroups();
+  render();
+})();
+</script>
+</body>
+</html>
